@@ -144,7 +144,11 @@
     },
     "extends": {
       "extensions": {
-        "sap.ui.controllerExtensions": {}
+        "sap.ui.controllerExtensions": {
+          "sap.fe.templates.ObjectPage.ObjectPageController": {
+            "controllerName": "project1.ext.controller.Object"
+          }
+        }
       }
     }
   },

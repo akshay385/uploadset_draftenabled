@@ -6,6 +6,7 @@ sap.ui.define([
 ], function(MessageToast) {
     'use strict';
 	var that = this;
+	var extractedNumber;
 
     return {
         onPress: function(oEvent) {
@@ -15,12 +16,22 @@ sap.ui.define([
 		onAfterItemAdded: function(oEvent) {
 			debugger;
 			var item = oEvent.getParameter("item");
+			var par_id = window.location.href;
+			const regex = /id='(\d+)'/;
+			const match = par_id.match(regex);
+			if (match) {
+				extractedNumber = match[1];
+				console.log(extractedNumber); // Output: 1
+			} else {
+				console.log("Number not found in URL");
+			}
 		
 			var _createEntity = function(item) {
 				var data = {
 					mediaType: item.getMediaType(),
 					fileName: item.getFileName(),
-					size: item.getFileObject().size
+					size: item.getFileObject().size,
+					id1 : extractedNumber,
 				};
 		
 				var settings = {
@@ -45,7 +56,7 @@ sap.ui.define([
 		
 			_createEntity(item)
 				.then((id) => {
-					var url = `/odata/v4/attachments/Files(${id})/content`;
+					var url = `/odata/v4/attachments/Files(ID=${id},id1='${extractedNumber}')/content`;
 					item.setUploadUrl(url);
 					var oUploadSet = this.byId("uploadSet");
 					oUploadSet.setHttpRequestMethod("PUT");
@@ -69,22 +80,18 @@ sap.ui.define([
 			},
 
 			onOpenPressed: function(oEvent) {
-				debugger
+				debugger;
 				oEvent.preventDefault();
 				var item = oEvent.getSource();
-				var fileName = item.getFileName();
+				var fileUrl = item.getUrl();
 				
-				var _download = function(item) {
-					var settings = {
-						url: item.getUrl(),
-						method: "GET",
-						headers: {
-							"Content-type": "application/octet-stream"
-						},
-						xhrFields: {
-							responseType: 'blob'
-						}
-					};
+				// Open file in a new tab
+				var newTab = window.open(fileUrl, '_blank');
+				if (newTab) {
+					newTab.focus();
+				} else {
+					// If pop-up blocker prevents opening new tab, provide alternative instructions
+					alert('Please allow pop-ups to open the file.');			
 	
 					return new Promise((resolve, reject) => {
 						$.ajax(settings)
@@ -163,7 +170,8 @@ sap.ui.define([
 			},
 
 			_uploadContent: function (item, id) {
-				var url = `/attachments/Files(${id})/content`
+				// var url = `/attachments/Files(${id})/content`
+				var url = `/attachments/Files(ID='${id}',id1=)/content`
 				item.setUploadUrl(url);
 				var oUploadSet = this.byId("uploadSet");
 				oUploadSet.setHttpRequestMethod("PUT")

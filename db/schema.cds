@@ -11,6 +11,7 @@ entity parent{
 }
 
 entity Files: cuid, managed{
+    key id1 : String;
     @Core.MediaType: mediaType
     content: LargeBinary;
     @Core.IsMediaType: true
@@ -19,3 +20,11 @@ entity Files: cuid, managed{
     size: Integer;
     url: String;
 }
+
+entity draft_attachments
+{
+    key id : UUID;
+    attach_id1 : String;
+    parent_id : String;
+}
+
