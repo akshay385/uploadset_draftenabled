@@ -74,9 +74,12 @@ sap.ui.define([
 			},
 
 			onRemovePressed: function (oEvent) {
-				oEvent.preventDefault();
-				oEvent.getParameter("item").getBindingContext().delete();
-				MessageToast.show("Selected file has been deleted");
+				debugger;
+				// oEvent.preventDefault();
+				// oEvent.getParameter("item").getBindingContext().delete();
+				// MessageToast.show("Selected file has been deleted");
+				oEvent.getParameter("item").destroy();
+				
 			},
 
 			onOpenPressed: function(oEvent) {

@@ -35,6 +35,7 @@ xmlns:mvc="sap.ui.core.mvc"
 							enabledEdit="false"
 							openPressed="handler.onOpenPressed"
 							removePressed="handler.onRemovePressed"
+							
 						>
 							<upload:attributes>
 								<ObjectAttribute

@@ -9,10 +9,10 @@ sap.ui.define(['sap/ui/core/mvc/ControllerExtension'], function (ControllerExten
 		// this section allows to extend lifecycle hooks or hooks provided by Fiori elements
 		override: {
 			/**
-             * Called when a controller is instantiated and its View controls (if available) are already created.
-             * Can be used to modify the View before it is displayed, to bind event handlers and do other one-time initialization.
-             * @memberOf project1.ext.controller.Object
-             */
+			 * Called when a controller is instantiated and its View controls (if available) are already created.
+			 * Can be used to modify the View before it is displayed, to bind event handlers and do other one-time initialization.
+			 * @memberOf project1.ext.controller.Object
+			 */
 			onInit: function (oEvent) {
 				debugger
 				// you can access the Fiori elements extensionAPI via this.base.getExtensionAPI
@@ -20,7 +20,35 @@ sap.ui.define(['sap/ui/core/mvc/ControllerExtension'], function (ControllerExten
 			},
 			editFlow : {
 				onBeforeSave:async function (oEvent) {debugger
-					
+					var allItems = this.base.getView().mAggregations.content[0].mAggregations.sections[1].mAggregations._grid.mAggregations.content[0].mAggregations._grid.mAggregations.content[0].mAggregations.content.mAggregations.items[1].mAggregations.items
+					var ocacheItemscache = this.base.getView().mAggregations.content[0].mAggregations.sections[1].mAggregations._grid.mAggregations.content[0].mAggregations._grid.mAggregations.content[0].mAggregations.content.mAggregations.items[1].mBindingInfos.items.binding.oCache.aElements.$byPredicate
+					var obitems = this.base.getView().mAggregations.content[0].mAggregations.sections[1].mAggregations._grid.mAggregations.content[0].mAggregations._grid.mAggregations.content[0].mAggregations.content.mAggregations.items[1].mBindingInfos.items.binding.oCache.aElements.$byPredicate
+
+					var valuesArraycache = Object.values(obitems);
+
+					// this.base.getView().mAggregations.content[0].mAggregations.sections[1].mAggregations._grid.mAggregations.content[0].mAggregations._grid.mAggregations.content[0].mAggregations.content.mAggregations.items[1].mBindingInfos.items.binding.aContexts[0].delete()
+					for (var i = 0; i < valuesArraycache.length; i++) {
+						debugger;
+						var isFound = false; 
+						for (var j = 0; j < allItems.length; j++) {
+							debugger
+							var url =allItems[j].mProperties.url
+							// Regular expression to match the ID
+							var regex = /ID=([a-f\d-]+)/i;
+
+							// Extract the ID using the regular expression
+							var match = url.match(regex);
+							if (valuesArraycache[i].ID === match[1]) {
+								isFound = true; 
+
+								break;
+							}
+						}
+							
+							if (!isFound) {
+							this.base.getView().mAggregations.content[0].mAggregations.sections[1].mAggregations._grid.mAggregations.content[0].mAggregations._grid.mAggregations.content[0].mAggregations.content.mAggregations.items[1].mBindingInfos.items.binding.aContexts[i].delete()
+							}
+					}
 				},
 				onBeforeEdit : async function(oEvent)
 				{
@@ -53,6 +81,7 @@ sap.ui.define(['sap/ui/core/mvc/ControllerExtension'], function (ControllerExten
 					// 			reject(err);
 					// 		})
 					// })
+
 					debugger
 					let funcname = 'draft_attach';
 					let oFunction =oEvent.context.getModel().bindContext(`/${funcname}(...)`);
@@ -62,9 +91,12 @@ sap.ui.define(['sap/ui/core/mvc/ControllerExtension'], function (ControllerExten
 					const oContext = oFunction.getBoundContext();
 					var result = oContext.getValue();
 					result = JSON.parse(result.value);
+					if(result.length > 0)
+					{
 					console.log(result);
 					var draft_len = result.length;
 					console.log(draft_len);
+					}
 				},
 				onBeforeDiscard : async function(oEvent) {
 					//when user clicks on the discard draft button this function triggers
@@ -77,6 +109,10 @@ sap.ui.define(['sap/ui/core/mvc/ControllerExtension'], function (ControllerExten
 					await oFunction.execute();
 					const getbound = oFunction.getBoundContext();
 					getattachdata = getbound.getValue();	
+					if(getattachdata != 'undefined');
+					{
+					// 	if(getattachdata.value.length != 2)
+					// {	
 					getattachdata = JSON.parse(getattachdata.value);
 					console.log(getattachdata);
 					var attach_len = getattachdata.length;
@@ -107,19 +143,20 @@ sap.ui.define(['sap/ui/core/mvc/ControllerExtension'], function (ControllerExten
 						// 		if (getattachdata[i].id == getdraftattachdata[j].id) {
 						// 			matchedtemp_attach_data.push(getdraftattachdata[j]);
 						// 		}
-								
+
 						// 	}
 						// }
+						debugger
 						extraEntries = [];
 						for (let i = 0; i < getattachdata.length; i++) {
 							let found = false;
 							const item1 = getattachdata[i];
 							const item2 = getdraftattachdata[i];
-							
+
 							if (item2 !== undefined && item1.ID === item2.attach_id1 && item1.id1 === item2.parent_id) {
 								found = true;
 							}
-							
+
 							if (!found ) {
 								extraEntries.push(item1);
 							}
@@ -127,8 +164,12 @@ sap.ui.define(['sap/ui/core/mvc/ControllerExtension'], function (ControllerExten
 								extraEntries.push(item1);
 							}
 						}
+						debugger;
 						console.log(extraEntries);
-					}	
+					}
+
+					if(extraEntries != undefined)
+					{
 
 					// const ids = [];
 					// const id1s = [];
@@ -137,11 +178,12 @@ sap.ui.define(['sap/ui/core/mvc/ControllerExtension'], function (ControllerExten
 						id1s: []
 					}
 
+
 					extraEntries.forEach(entry => {
 						// Extract ID and id1 from each entry
 						const id = entry.ID;
 						const id1 = entry.id1;
-						
+
 						// Store the extracted ID and id1
 						dat.ids.push(id);
 						dat.id1s.push(id1);
@@ -158,6 +200,10 @@ sap.ui.define(['sap/ui/core/mvc/ControllerExtension'], function (ControllerExten
 					console.log(getdraftattachdata);
 					var refresh = this.getView().getContent()[0].getSections()[1].mAggregations._grid.getContent()[0].mAggregations._grid.getContent()[0].getContent().mAggregations.items[1].mBindingInfos.items.binding.refresh();
 					console.log(refresh);
+				}
+				// this.base.getView().mAggregations.content[0].mAggregations.sections[1].getBindingContext().refresh();
+				sap.ui.getCore().byId("project1::parentObjectPage--fe::CustomSubSection::Attachment--uploadSet").mBindingInfos.items.binding.refresh();
+				}
 
 				},
 				onAfterDiscard : async function(oEvent) {
@@ -167,17 +213,109 @@ sap.ui.define(['sap/ui/core/mvc/ControllerExtension'], function (ControllerExten
 					del_all_path.setParameter('ID',10);
 					await del_all_path.execute();
 					const del_all_bound = del_all_path.getBoundContext();
-					get_del_message = del_all_bound.getValue();
+					var get_del_message = del_all_bound.getValue();
+					console.log(get_del_message);
+					debugger
+				},
+				onAfterSave : async function(oEvent)
+				{
+					let del_all = 'delete_entry';
+					let del_all_path = oEvent.context.getModel().bindContext(`/${del_all}(...)`);
+					del_all_path.setParameter('ID',10);
+					await del_all_path.execute();
+					const del_all_bound = del_all_path.getBoundContext();
+					var get_del_message = del_all_bound.getValue();
 					console.log(get_del_message);
 					debugger
 				}
-				
-			},
 
-			routing : {
-				onBeforeBinding : async function (oBindingContext)
-				{
+			},
+			// editFlow: {
+			// 	onBeforeDiscard: async function (oEvent) {
+			// 		debugger;
+			// 		// var allItems = this.base.getView().mAggregations.content[0].mAggregations.sections[1].mAggregations._grid.mAggregations.content[0].mAggregations._grid.mAggregations.content[0].mAggregations.content.mAggregations.items[1].mAggregations.items
+			// 		// var ocacheItemscache = this.base.getView().mAggregations.content[0].mAggregations.sections[1].mAggregations._grid.mAggregations.content[0].mAggregations._grid.mAggregations.content[0].mAggregations.content.mAggregations.items[1].mBindingInfos.items.binding.oCache.aElements.$byPredicate
+			// 		// var obitems = this.base.getView().mAggregations.content[0].mAggregations.sections[1].mAggregations._grid.mAggregations.content[0].mAggregations._grid.mAggregations.content[0].mAggregations.content.mAggregations.items[1].mBindingInfos.items.binding.oCache.aElements.$byPredicate
+
+			// 		// var valuesArraycache = Object.values(obitems);
+
+			// 		// // this.base.getView().mAggregations.content[0].mAggregations.sections[1].mAggregations._grid.mAggregations.content[0].mAggregations._grid.mAggregations.content[0].mAggregations.content.mAggregations.items[1].mBindingInfos.items.binding.aContexts[0].delete()
+			// 		// for (var i = 0; i < valuesArraycache.length; i++) {
+			// 		// 	debugger;
+			// 		// 	var isFound = false; 
+			// 		// 	for (var j = 0; j < allItems.length; j++) {
+			// 		// 		debugger
+			// 		// 		var url =allItems[j].mProperties.url
+			// 		// 		// Regular expression to match the ID
+			// 		// 		var regex = /ID=([a-f\d-]+)/i;
+
+			// 		// 		// Extract the ID using the regular expression
+			// 		// 		var match = url.match(regex);
+			// 		// 		if (valuesArraycache[i].ID === match[1]) {
+			// 		// 			isFound = true; 
+
+			// 		// 			break;
+			// 		// 		}
+			// 		// 	}
+							
+			// 		// 		if (!isFound) {
+			// 		// 		this.base.getView().mAggregations.content[0].mAggregations.sections[1].mAggregations._grid.mAggregations.content[0].mAggregations._grid.mAggregations.content[0].mAggregations.content.mAggregations.items[1].mBindingInfos.items.binding.aContexts[i].delete()
+			// 		// 		}
+						
+
+
+			// 		// }
+			// 		// var oUploadSet = this.byId("uploadSet");
+			// 		// oUploadSet.removeAllIncompleteItems();
+			// 		// oUploadSet.getBinding("items").refresh();
+			// 		// this.base.getView().mAggregations.content[0].mAggregations.sections[1].getBindingContext().refresh()
+			// 		// this.getView().getContent()[0].getSections()[1].mAggregations._grid.getContent()[0].mAggregations._grid.getContent()[0].getContent().mAggregations.items[1].mBindingInfos.items.binding.refresh
+			// 		sap.ui.getCore().byId("project1::parentObjectPage--fe::CustomSubSection::Attachment--uploadSet").mBindingInfos.items.binding.refresh();
+
+			// 	},
+			// 	onBeforeSave: async function (oEvent) {
+			// 		debugger;
+			// 		var allItems = this.base.getView().mAggregations.content[0].mAggregations.sections[1].mAggregations._grid.mAggregations.content[0].mAggregations._grid.mAggregations.content[0].mAggregations.content.mAggregations.items[1].mAggregations.items
+			// 		var ocacheItemscache = this.base.getView().mAggregations.content[0].mAggregations.sections[1].mAggregations._grid.mAggregations.content[0].mAggregations._grid.mAggregations.content[0].mAggregations.content.mAggregations.items[1].mBindingInfos.items.binding.oCache.aElements.$byPredicate
+			// 		var obitems = this.base.getView().mAggregations.content[0].mAggregations.sections[1].mAggregations._grid.mAggregations.content[0].mAggregations._grid.mAggregations.content[0].mAggregations.content.mAggregations.items[1].mBindingInfos.items.binding.oCache.aElements.$byPredicate
+
+			// 		var valuesArraycache = Object.values(obitems);
+
+			// 		// this.base.getView().mAggregations.content[0].mAggregations.sections[1].mAggregations._grid.mAggregations.content[0].mAggregations._grid.mAggregations.content[0].mAggregations.content.mAggregations.items[1].mBindingInfos.items.binding.aContexts[0].delete()
+			// 		for (var i = 0; i < valuesArraycache.length; i++) {
+			// 			debugger;
+			// 			var isFound = false; 
+			// 			for (var j = 0; j < allItems.length; j++) {
+			// 				debugger
+			// 				var url =allItems[j].mProperties.url
+			// 				// Regular expression to match the ID
+			// 				var regex = /ID=([a-f\d-]+)/i;
+
+			// 				// Extract the ID using the regular expression
+			// 				var match = url.match(regex);
+			// 				if (valuesArraycache[i].ID === match[1]) {
+			// 					isFound = true; 
+
+			// 					break;
+			// 				}
+			// 			}
+							
+			// 				if (!isFound) {
+			// 				this.base.getView().mAggregations.content[0].mAggregations.sections[1].mAggregations._grid.mAggregations.content[0].mAggregations._grid.mAggregations.content[0].mAggregations.content.mAggregations.items[1].mBindingInfos.items.binding.aContexts[i].delete()
+			// 				}
+						
+
+
+			// 		}
+
+			// 	}
+
+			// },
+
+			routing: {
+				onBeforeBinding: async function (oBindingContext) {
 					debugger;
+					// sap.ui.getCore().byId("project1::parentObjectPage--fe::CustomSubSection::Attachment--uploadSet").mBindingInfos.items.binding.refresh();
 				}
 			},
 
